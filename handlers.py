@@ -10,6 +10,8 @@ class GPXHandler(ContentHandler):
         self.inTrkSeg = False
         self.inTrkPt = False
         self.inTime = False
+        self.addTrkPt = False
+        
         self.timeText = ''
         self.trkPtText = ''
 
@@ -20,7 +22,6 @@ class GPXHandler(ContentHandler):
         self.content = ''
 
     def getContent(self):
-        print (self.content)
         return self.content
     
     def startElement(self, name, attrs):
@@ -36,18 +37,17 @@ class GPXHandler(ContentHandler):
             self.trkPtText += '<' + name
             for item in attrs.items():
                 self.trkPtText += ' ' + item[0] + '="' + item[1] + '"'
+            self.trkPtText += '>'
         else:
             self.content += '<' + name
             for item in attrs.items():
                 self.content += ' ' + item[0] + '="' + item[1] + '"'
             self.content += '>'
             
-       
-
     def characters(self, characters):
 
         if self.inTrkPt:
-            self.trkPtText += characters
+            self.trkPtText += characters.strip()
         else:
             self.content += characters.strip()
             
@@ -57,17 +57,24 @@ class GPXHandler(ContentHandler):
     def endElement(self, name):
         if self.inTrkPt:
             self.trkPtText += '</' + name + '>'
+      
         else:
             self.content += '</' + name + '>'
             
         if self.inTime and name == 'time':
             self.inTime = False
             ftime = datetime.strptime(self.timeText, "%Y-%m-%dT%H:%M:%S.%fZ")
-            print(ftime.ctime())
+            if self.fromDate >= ftime:
+                self.addTrkPt = True
+            else:
+                self.addTrkPt = False
         elif name == 'trk':
             self.inTrk = False
         elif name == 'trkpt':
             self.inTrkPt = False
-            
+            if self.addTrkPt:
+                self.content += self.trkPtText
+            #print(self.trkPtText)
+            self.trkPtText = ''
                 
         
