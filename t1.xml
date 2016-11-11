@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="Garmin Connect" version="1.1">
+  <metadata>
+    <link href="connect.garmin.com">
+      <text>Garmin Connect</text>
+    </link>
+    <time>2016-10-23T07:39:41.000Z</time>
+  </metadata>
+  <trk>
+    <name>Luxembourg Cycling</name>
+    <type>cycling</type>
+    <trkseg>
+      <trkpt lat="49.63982303626835346221923828125" lon="6.1475149355828762054443359375">
+        <ele>300.600006103515625</ele>
+        <time>2016-10-23T07:39:41.000Z</time>
+      </trkpt>
+      <trkpt lat="49.6398278139531612396240234375" lon="6.14751401357352733612060546875">
+        <ele>300.600006103515625</ele>
+        <time>2016-10-23T07:39:42.000Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
