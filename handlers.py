@@ -6,10 +6,11 @@ from datetime import datetime
 class GPXHandler(ContentHandler):
 
     def __init__(self, fromDate, toDate, container):
+        self.inTrk = False
         self.inTrkSeg = False
         self.inTrkPt = False
         self.inTime = False
-        self.timeValue = ''
+        self.timeText = ''
         self.trkPtText = ''
 
         self.fromDate = datetime.strptime(fromDate, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -28,8 +29,13 @@ class GPXHandler(ContentHandler):
             self.content += ' ' + item[0] + '="' + item[1] + '"'
 
         self.content += '>'
-        # if name == 'trkseg':
-        #     self.inTrkSeg = True
+
+        if self.inTrk and name == 'time':
+            self.timeText = ''
+            self.inTime = True
+        
+        if name == 'trk':
+            self.inTrk = True 
             
         # elif self.inTrkSeg and name == 'trkpt':
         #     self.inTrkPt = True
@@ -47,7 +53,7 @@ class GPXHandler(ContentHandler):
         self.content += characters.strip()
         
         if self.inTime:
-            self.timeValue += characters
+            self.timeText += characters
 
         if self.inTrkPt:
             self.trkPtText += characters
@@ -63,9 +69,13 @@ class GPXHandler(ContentHandler):
         #     self.inTrkPt = False
         #     self.trkPtText += '</trkpt>'
             
-        #     if name == 'time':
-        #         self.inTime = False
-        #         ftime = datetime.strptime(self.timeValue, "%Y-%m-%dT%H:%M:%S.%fZ")
+        if self.inTime and name == 'time':
+            self.inTime = False
+            ftime = datetime.strptime(self.timeText, "%Y-%m-%dT%H:%M:%S.%fZ")
+            print(ftime.ctime())
+
+        elif name == 'trk':
+            self.inTrk = False
                 
         self.content += '</' + name + '>'
                     
