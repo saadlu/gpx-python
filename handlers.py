@@ -20,62 +20,54 @@ class GPXHandler(ContentHandler):
         self.content = ''
 
     def getContent(self):
+        print (self.content)
         return self.content
     
     def startElement(self, name, attrs):
-        self.content += '<' + name
-
-        for item in attrs.items():
-            self.content += ' ' + item[0] + '="' + item[1] + '"'
-
-        self.content += '>'
-
-        if self.inTrk and name == 'time':
+        if name == 'trkpt':
+            self.inTrkPt = True
+        elif self.inTrk and name == 'time':
             self.timeText = ''
             self.inTime = True
-        
-        if name == 'trk':
+        elif name == 'trk':
             self.inTrk = True 
-            
-        # elif self.inTrkSeg and name == 'trkpt':
-        #     self.inTrkPt = True
-        #     self.trkPtText = ''
 
-        # elif self.inTrkPt:
-        #     self.trkPtText += '<' + name + '>'
+        if self.inTrkPt:     
+            self.trkPtText += '<' + name
+            for item in attrs.items():
+                self.trkPtText += ' ' + item[0] + '="' + item[1] + '"'
+        else:
+            self.content += '<' + name
+            for item in attrs.items():
+                self.content += ' ' + item[0] + '="' + item[1] + '"'
+            self.content += '>'
             
-        #     if name == 'time':
-        #         self.inTime = True
-        #         self.timeValue = ''
-            
+       
 
     def characters(self, characters):
-        self.content += characters.strip()
-        
-        if self.inTime:
-            self.timeText += characters
 
         if self.inTrkPt:
             self.trkPtText += characters
+        else:
+            self.content += characters.strip()
+            
+        if self.inTime:
+            self.timeText += characters
             
     def endElement(self, name):
-        # if name == 'time':
-        #     self.inTime = False
-        #     ftime = datetime.strptime(self.timeValue, "%Y-%m-%dT%H:%M:%S.%fZ")
-        #     if ftime >= self.fromDate and ftime <= self.toDate:
-        #         self.container.append(self.trkPtText)
-            
-        # elif name == 'trkpt':
-        #     self.inTrkPt = False
-        #     self.trkPtText += '</trkpt>'
+        if self.inTrkPt:
+            self.trkPtText += '</' + name + '>'
+        else:
+            self.content += '</' + name + '>'
             
         if self.inTime and name == 'time':
             self.inTime = False
             ftime = datetime.strptime(self.timeText, "%Y-%m-%dT%H:%M:%S.%fZ")
             print(ftime.ctime())
-
         elif name == 'trk':
             self.inTrk = False
+        elif name == 'trkpt':
+            self.inTrkPt = False
+            
                 
-        self.content += '</' + name + '>'
-                    
+        
